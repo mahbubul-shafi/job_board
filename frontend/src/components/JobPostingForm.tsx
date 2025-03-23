@@ -1,5 +1,6 @@
 'use client'
 import { useState } from "react";
+import api from '@/lib/api';
 
 export default function JobPostingForm() {
   const [formData, setFormData] = useState({
@@ -19,10 +20,26 @@ export default function JobPostingForm() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form Data Submitted:", formData);
-    // You can add API call or further processing here
+
+    try {
+      const response = await api.post('/jobs', {
+        title: formData.jobTitle,
+        description: formData.description,
+        location: formData.location,
+        salary: `${formData.salaryFrom} - ${formData.salaryTo}`,
+        experience: formData.experienceLevel
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`, 
+        },
+      });
+  
+      console.log("Job created successfully:", response.data);
+    } catch(error){
+      console.log("an error occured");
+    }
   };
 
   return (

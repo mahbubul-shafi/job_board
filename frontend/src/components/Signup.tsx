@@ -1,9 +1,34 @@
-import Link from "next/link";
+'use client'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import api from "../lib/api";
+import { useAuth } from "../context/AuthContext";
+
 export default function Signup() {
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const router = useRouter();
+  const { login } = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const response = await api.post("/auth/signup", { name, email, password });
+      login(response.data.token); // Use the login function from AuthContext
+      router.push("/"); // Redirect to home page
+    } catch (error) {
+      setError("Something went wrong. Please try again.");
+    }
+  };
+
   return (
     <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
-      <form>
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+      <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label htmlFor="name" className="block text-sm font-medium mb-2">
             Name
@@ -11,7 +36,8 @@ export default function Signup() {
           <input
             type="text"
             id="name"
-            name="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
@@ -23,7 +49,8 @@ export default function Signup() {
           <input
             type="email"
             id="email"
-            name="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
@@ -35,7 +62,8 @@ export default function Signup() {
           <input
             type="password"
             id="password"
-            name="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
@@ -49,9 +77,9 @@ export default function Signup() {
       </form>
       <p className="mt-4 text-center">
         Already have an account?{" "}
-        <Link href="/login" className="text-blue-600 hover:underline">
+        <a href="/login" className="text-blue-600 hover:underline">
           Login
-        </Link>
+        </a>
       </p>
     </div>
   );
