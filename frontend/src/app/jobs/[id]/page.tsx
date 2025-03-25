@@ -9,7 +9,7 @@ interface Job {
   salary: string;
   experience: string;
   company: string;
-  employer: string;
+  employer_email: string;
 }
 
 export default async function JobDetailPage({
@@ -17,8 +17,10 @@ export default async function JobDetailPage({
 }: {
   params: { id: string };
 }) {
+  const { id } = await params;
+
   // Fetch the job details from the backend
-  const response = await api.get(`/jobs/${params.id}`);
+  const response = await api.get(`/jobs/${id}`);
   const job: Job = response.data;
 
   if (!job) {
@@ -32,7 +34,7 @@ export default async function JobDetailPage({
       <p className="text-gray-600 mb-2">{job.location}</p>
       <p className="text-gray-600 mb-2">{job.salary}</p>
       <p className="text-gray-600 mb-2">{job.experience}</p>
-      <p className="text-gray-600 mb-2">{job.employer}</p>
+      <p className="text-gray-600 mb-2">{job.employer_email}</p>
       <div className="mt-6">
         <h2 className="text-xl font-bold mb-2">Job Description</h2>
         <p className="text-gray-700">{job.description}</p>

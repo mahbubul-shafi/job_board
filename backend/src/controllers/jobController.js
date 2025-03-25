@@ -1,6 +1,13 @@
 const Job = require("../models/Job");
 const User = require("../models/User");
 
+// Get job posted by a specific user
+const getSpecificJobs = (req, res) => {
+  const { postedBy } = req.query;
+  const filter = postedBy ? { postedBy } : {};
+  Job.find(filter).then(jobs => res.json(jobs));
+}
+
 // Create a job
 const createJob = async (req, res) => {
   try {
@@ -83,4 +90,4 @@ const getAllJob = async (req, res) => {
   }
 };
 
-module.exports = { createJob, applyJob, getSingleJob, getAllJob };
+module.exports = { getSpecificJobs, createJob, applyJob, getSingleJob, getAllJob };

@@ -1,11 +1,29 @@
-'use client'
+"use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
+import api from "@/lib/api";
 
 export default function Header() {
   const { isLoggedIn, logout } = useAuth();
   const router = useRouter();
+
+  const handleMyProfile = async () => {
+    try {
+      // Get current user's data
+      const response = await api.get("/me", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const userId = response.data._id;
+
+      // Redirect to profile page
+      router.push(`/profile/${userId}`);
+    } catch (error) {
+      console.error("Failed to fetch user profile:", error);
+    }
+  };
 
   const handleLogout = () => {
     logout(); // Call the logout function from the AuthContext
@@ -18,12 +36,40 @@ export default function Header() {
         <h1 className="text-2xl font-bold">Job Search Platform</h1>
         <nav>
           <ul className="flex space-x-4">
+            <li>
+              <Link href="/" className="hover:text-blue-300">
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link href="/profile" className="hover:text-blue-300">
+                All users
+              </Link>
+            </li>
             {isLoggedIn ? (
-              <li>
-                <button onClick={handleLogout} className="hover:text-blue-300">
-                  Logout
-                </button>
-              </li>
+              <>
+                <li>
+                  <Link href="/my-applications" className="hover:text-blue-300">
+                    My Applications
+                  </Link>
+                </li>
+                <li>
+                  <button
+                    onClick={handleMyProfile}
+                    className="hover:text-blue-300"
+                  >
+                    My profile
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={handleLogout}
+                    className="hover:text-blue-300"
+                  >
+                    Logout
+                  </button>
+                </li>
+              </>
             ) : (
               <>
                 <li>
